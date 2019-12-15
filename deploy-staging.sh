@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-cd /home/dev_root/smartfit-v2/stage/backend/
+cd /home/dev_root/www/smartfit-v2/stage/backend
 git status
 git checkout .
 git checkout staging
