@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\FoodDeliveryOrganization;
 use Tests\TestCase;
 
-class UserAuthTest extends TestCase
+class OrganizationAuthTest extends TestCase
 {
     /**
      * First register (unique email)
@@ -14,7 +14,7 @@ class UserAuthTest extends TestCase
      */
     public function firstRegisterTest()
     {
-        $response = $this->postJson('/api/register', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/organization/register', ['email' => 'test@test.test', 'password' => '88888888']);
         $response->assertStatus(200)->assertJson(['token' => true]);
     }
 
@@ -25,7 +25,7 @@ class UserAuthTest extends TestCase
      */
     public function secondRegisterTest()
     {
-        $response = $this->postJson('/api/register', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/organization/register', ['email' => 'test@test.test', 'password' => '88888888']);
         $response->assertStatus(422);
     }
 
@@ -36,7 +36,7 @@ class UserAuthTest extends TestCase
      */
     public function firstLoginTest()
     {
-        $response = $this->postJson('/api/login', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/organization/login', ['email' => 'test@test.test', 'password' => '88888888']);
         $response->assertStatus(200)->assertJson(['token' => true]);
     }
 
@@ -47,13 +47,13 @@ class UserAuthTest extends TestCase
      */
     public function isUserExistsTest()
     {
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseHas('food_delivery_organizations', [
             'email' => 'test@test.test',
         ]);
 
-        User::where('email', 'test@test.test')->delete();
+        FoodDeliveryOrganization::where('email', 'test@test.test')->delete();
 
-        $this->assertDatabaseMissing('users', [
+        $this->assertDatabaseMissing('food_delivery_organizations', [
             'email' => 'test@test.test',
         ]);
     }
@@ -65,7 +65,7 @@ class UserAuthTest extends TestCase
      */
     public function secondLoginTest()
     {
-        $response = $this->postJson('/api/login', ['email' => 'test@test.test', 'password' => '']);
-        $response->assertStatus(422);
+        $response = $this->postJson('/api/organization/login', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response->assertStatus(401);
     }
 }

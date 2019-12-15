@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Tests\TestCase;
 
-class AuthTest extends TestCase
+class UserAuthTest extends TestCase
 {
     /**
      * First register (unique email)
@@ -65,7 +65,7 @@ class AuthTest extends TestCase
      */
     public function secondLoginTest()
     {
-        $response = $this->postJson('/api/login', ['email' => 'test@test.test', 'password' => '']);
-        $response->assertStatus(422);
+        $response = $this->postJson('/api/login', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response->assertStatus(401);
     }
 }
