@@ -9,8 +9,8 @@ class RegisterRequest extends BaseApiRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|unique:users',
-            'password' => 'required',
+            'email' => 'required|email|unique:users|max:50',
+            'password' => 'required|max:30|confirmed',
             'usage_policy' => 'required|accepted'
         ];
     }
