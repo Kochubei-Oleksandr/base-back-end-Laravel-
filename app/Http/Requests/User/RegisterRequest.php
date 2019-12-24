@@ -11,6 +11,7 @@ class RegisterRequest extends BaseApiRequest
         return [
             'email' => 'required|email|unique:users',
             'password' => 'required',
+            'usage_policy' => 'required|accepted'
         ];
     }
 }
