@@ -16,9 +16,10 @@ class CreateLifestyleTranslationsTable extends Migration
         Schema::create('lifestyle_translations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 50);
-            $table->string('language', 3);
+            $table->integer('language_id')->unsigned();
             $table->integer('lifestyle_id')->unsigned();
 
+            $table->foreign('language_id')->references('id')->on('languages');
             $table->foreign('lifestyle_id')->references('id')->on('lifestyles');
         });
     }
@@ -31,6 +32,7 @@ class CreateLifestyleTranslationsTable extends Migration
     public function down()
     {
         Schema::table('lifestyle_translations', function (Blueprint $table) {
+            $table->dropForeign(['language_id']);
             $table->dropForeign(['lifestyle_id']);
         });
         Schema::dropIfExists('lifestyle_translations');

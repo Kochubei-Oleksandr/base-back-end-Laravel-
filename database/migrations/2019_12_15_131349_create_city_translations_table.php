@@ -16,9 +16,10 @@ class CreateCityTranslationsTable extends Migration
         Schema::create('city_translations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 30);
-            $table->string('language', 3);
+            $table->integer('language_id')->unsigned();
             $table->integer('city_id')->unsigned();
 
+            $table->foreign('language_id')->references('id')->on('languages');
             $table->foreign('city_id')->references('id')->on('cities');
         });
     }
@@ -31,6 +32,7 @@ class CreateCityTranslationsTable extends Migration
     public function down()
     {
         Schema::table('city_translations', function (Blueprint $table) {
+            $table->dropForeign(['language_id']);
             $table->dropForeign(['city_id']);
         });
         Schema::dropIfExists('city_translations');

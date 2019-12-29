@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 abstract class BaseAuthController extends BaseController
 {
-    protected $guard;
+    protected string $guard;
 
     public function login(LoginRequest $request)
     {
@@ -19,7 +19,7 @@ abstract class BaseAuthController extends BaseController
 
     public function registerAttempt(Request $request)
     {
-        if (parent::store($request)) {
+        if (parent::createOne($request)) {
             return $this->loginAttempt($request->only(['email', 'password']));
         }
         return $this->responseWithError('Something went wrong. Try later', 500);

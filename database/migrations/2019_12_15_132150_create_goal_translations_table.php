@@ -16,9 +16,10 @@ class CreateGoalTranslationsTable extends Migration
         Schema::create('goal_translations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 30);
-            $table->string('language', 3);
+            $table->integer('language_id')->unsigned();
             $table->integer('goal_id')->unsigned();
 
+            $table->foreign('language_id')->references('id')->on('languages');
             $table->foreign('goal_id')->references('id')->on('goals');
         });
     }
@@ -31,6 +32,7 @@ class CreateGoalTranslationsTable extends Migration
     public function down()
     {
         Schema::table('goal_translations', function (Blueprint $table) {
+            $table->dropForeign(['language_id']);
             $table->dropForeign(['goal_id']);
         });
         Schema::dropIfExists('goal_translations');

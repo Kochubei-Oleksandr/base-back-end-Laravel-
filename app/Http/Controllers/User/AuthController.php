@@ -10,8 +10,8 @@ use App\Models\User;
 
 class AuthController extends BaseAuthController
 {
-    protected $guard = 'user';
-    protected $modelClass = User::class;
+    protected string $guard = 'user';
+    protected string $modelClassController = User::class;
 
     public function register(RegisterRequest $request)
     {

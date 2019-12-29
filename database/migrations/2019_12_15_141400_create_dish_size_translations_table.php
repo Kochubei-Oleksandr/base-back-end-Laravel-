@@ -16,9 +16,10 @@ class CreateDishSizeTranslationsTable extends Migration
         Schema::create('dish_size_translations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 20);
-            $table->string('language', 3);
+            $table->integer('language_id')->unsigned();
             $table->integer('dish_size_id')->unsigned();
 
+            $table->foreign('language_id')->references('id')->on('languages');
             $table->foreign('dish_size_id')->references('id')->on('dish_sizes');
         });
     }
@@ -31,6 +32,7 @@ class CreateDishSizeTranslationsTable extends Migration
     public function down()
     {
         Schema::table('dish_size_translations', function (Blueprint $table) {
+            $table->dropForeign(['language_id']);
             $table->dropForeign(['dish_size_id']);
         });
         Schema::dropIfExists('dish_size_translations');

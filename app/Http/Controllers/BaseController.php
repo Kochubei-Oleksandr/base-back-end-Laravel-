@@ -1,40 +1,45 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 use Illuminate\Http\Request;
 
 abstract class BaseController extends Controller
 {
-    /** @var Model $modelClass */
-    protected $modelClass;
+    protected string $modelClassController;
+    protected object $baseModel;
 
-    public function index()
+    public function __construct(BaseModel $baseModel)
     {
-        return $this->modelClass::all();
+        $baseModel->init($this->modelClassController);
+        $this->baseModel = $baseModel;
     }
 
-    public function store(Request $request)
+    public function getAll()
     {
-        $modelData = $request->all();
-        return $this->modelClass::create($modelData);
+        return $this->baseModel->getAll();
     }
 
-    public function show($id)
+    public function getOne($id)
     {
-        return $this->modelClass::find($id);
+        return $this->baseModel->getOne($id);
     }
 
-    public function update(Request $request, $id)
+    public function createOne(Request $request)
     {
-        //
+        $modelData= $request->all();
+        return $this->baseModel->createOne($modelData);
     }
 
-    public function destroy($id)
+    public function updateOne(Request $request, $id)
     {
-        return $this->modelClass::destroy($id);
+        return $this->baseModel->updateOne();
+    }
+
+    public function deleteOne($id)
+    {
+        return $this->baseModel->deleteOne($id);
     }
 
     protected function successResponse($responseData)
