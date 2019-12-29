@@ -16,9 +16,10 @@ class CreateSexTranslationsTable extends Migration
         Schema::create('sex_translations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 20);
-            $table->string('language', 3);
+            $table->integer('language_id')->unsigned();
             $table->integer('sex_id')->unsigned();
 
+            $table->foreign('language_id')->references('id')->on('languages');
             $table->foreign('sex_id')->references('id')->on('sexes');
         });
     }
@@ -31,6 +32,7 @@ class CreateSexTranslationsTable extends Migration
     public function down()
     {
         Schema::table('sex_translations', function (Blueprint $table) {
+            $table->dropForeign(['language_id']);
             $table->dropForeign(['sex_id']);
         });
         Schema::dropIfExists('sex_translations');

@@ -16,3 +16,7 @@ Route::group(['prefix' => 'organization'], function () {
     });
 
 });
+
+Route::get('countries', 'Location\\CountryController@getAll');
+Route::get('regions', 'Location\\RegionController@getRegionsByCountry');
+Route::get('cities', 'Location\\CityController@getCitiesByRegion');
