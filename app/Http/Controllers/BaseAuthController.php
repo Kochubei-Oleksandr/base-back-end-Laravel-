@@ -19,7 +19,7 @@ abstract class BaseAuthController extends BaseController
 
     public function registerAttempt(Request $request)
     {
-        if (parent::createOne($request)) {
+        if (parent::createOne()) {
             return $this->loginAttempt($request->only(['email', 'password']));
         }
         return $this->responseWithError('Something went wrong. Try later', 500);

@@ -16,7 +16,7 @@ class BaseModel extends Model
             : $this->modelClass::all();
     }
 
-    public function getOne($id)
+    public function getOne(int $id)
     {
         return $this->modelClass::find($id);
     }
@@ -26,12 +26,24 @@ class BaseModel extends Model
         return $this->modelClass::create($modelData);
     }
 
-    public function updateOne()
+    public function updateOne(array $modelData, int $id)
     {
+        $model = $this->getOne($id);
+        $filteredModelData = array_filter(
+            $modelData,
+            function ($key) use ($model) {
+                return in_array($key, $model->getFillable());
+            },
+            ARRAY_FILTER_USE_KEY
+        );
 
+        $model->fill($filteredModelData);
+        $model->save();
+
+        return $model->refresh();
     }
 
-    public function deleteOne($id)
+    public function deleteOne(int $id)
     {
         return $this->modelClass::destroy($id);
     }
