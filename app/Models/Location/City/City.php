@@ -10,15 +10,7 @@ class City extends BaseModel
 
     public $timestamps = false;
 
-    public function getCityById($city_id) {
-        $this->init(get_class($this));
-
-        return $this->getAllCollectionsWithTranslate()
-            ->where($this->tablePluralName.'.id', $city_id)
-            ->first();
+    public static function getCityById($city_id) {
+        return self::where('id', $city_id)->first();
     }
-
-//    public static function getRegionByCity($city_id) {
-//        self::where('id', $city_id)->first();
-//    }
 }

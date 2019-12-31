@@ -10,11 +10,7 @@ class Region extends BaseModel
 
     public $timestamps = false;
 
-    public function getRegionById($region_id) {
-        $this->init(get_class($this));
-
-        return $this->getAllCollectionsWithTranslate()
-            ->where($this->tablePluralName.'.id', $region_id)
-            ->first();
+    public static function getRegionById($region_id) {
+        return self::where('id', $region_id)->first();
     }
 }
