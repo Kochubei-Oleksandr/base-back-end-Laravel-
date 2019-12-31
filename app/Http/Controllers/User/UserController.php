@@ -16,11 +16,13 @@ class UserController extends BaseController
     {
         $userData = $this->baseModel->getOne(Auth::id());
 
-        $city = City::getCityById($userData->city_id);;
-        $region = Region::getRegionById($city->region_id);
+        if ($userData->city_id) {
+            $city = City::getCityById($userData->city_id);;
+            $region = Region::getRegionById($city->region_id);
 
-        $userData->{"region_id"} = $city->region_id;
-        $userData->{"country_id"} = $region->country_id;
+            $userData->{"region_id"} = $city->region_id;
+            $userData->{"country_id"} = $region->country_id;
+        }
 
         return $userData;
     }
