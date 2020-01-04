@@ -9,8 +9,4 @@ class City extends BaseModel
     protected $fillable = ['id'];
 
     public $timestamps = false;
-
-    public static function getCityById($city_id) {
-        return self::where('id', $city_id)->first();
-    }
 }
