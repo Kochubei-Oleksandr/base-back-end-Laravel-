@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\auth;
 
 use App\Models\FoodDeliveryOrganization;
 use Tests\TestCase;
@@ -14,18 +14,23 @@ class OrganizationAuthTest extends TestCase
      */
     public function firstRegisterTest()
     {
-        $response = $this->postJson('/api/organization/register', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/organization/register', [
+            'email' => 'test333@test.test',
+            'password' => '88888888',
+            'password_confirmation' => '88888888',
+            'usage_policy' => true,
+        ]);
         $response->assertStatus(200)->assertJson(['token' => true]);
     }
 
     /**
-     * This email is used (test@test.test)
+     * This email is used (test333@test.test)
      * @test
      * @return void
      */
     public function secondRegisterTest()
     {
-        $response = $this->postJson('/api/organization/register', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/organization/register', ['email' => 'test333@test.test', 'password' => '88888888']);
         $response->assertStatus(422);
     }
 
@@ -36,7 +41,7 @@ class OrganizationAuthTest extends TestCase
      */
     public function firstLoginTest()
     {
-        $response = $this->postJson('/api/organization/login', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/organization/login', ['email' => 'test333@test.test', 'password' => '88888888']);
         $response->assertStatus(200)->assertJson(['token' => true]);
     }
 
@@ -48,13 +53,13 @@ class OrganizationAuthTest extends TestCase
     public function isUserExistsTest()
     {
         $this->assertDatabaseHas('food_delivery_organizations', [
-            'email' => 'test@test.test',
+            'email' => 'test333@test.test',
         ]);
 
-        FoodDeliveryOrganization::where('email', 'test@test.test')->delete();
+        FoodDeliveryOrganization::where('email', 'test333@test.test')->delete();
 
         $this->assertDatabaseMissing('food_delivery_organizations', [
-            'email' => 'test@test.test',
+            'email' => 'test333@test.test',
         ]);
     }
 
@@ -65,7 +70,7 @@ class OrganizationAuthTest extends TestCase
      */
     public function secondLoginTest()
     {
-        $response = $this->postJson('/api/organization/login', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/organization/login', ['email' => 'test333@test.test', 'password' => '88888888']);
         $response->assertStatus(401);
     }
 }
