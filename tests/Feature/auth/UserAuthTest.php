@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\auth;
 
 use App\Models\User;
-use Tests\TestCase;
+use Tests\Feature\BaseTest;
 
-class UserAuthTest extends TestCase
+class UserAuthTest extends BaseTest
 {
     /**
      * First register (unique email)
@@ -14,18 +14,18 @@ class UserAuthTest extends TestCase
      */
     public function firstRegisterTest()
     {
-        $response = $this->postJson('/api/register', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->registration();
         $response->assertStatus(200)->assertJson(['token' => true]);
     }
 
     /**
-     * This email is used (test@test.test)
+     * This email is used (test333@test.test)
      * @test
      * @return void
      */
     public function secondRegisterTest()
     {
-        $response = $this->postJson('/api/register', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->registration();
         $response->assertStatus(422);
     }
 
@@ -36,7 +36,7 @@ class UserAuthTest extends TestCase
      */
     public function firstLoginTest()
     {
-        $response = $this->postJson('/api/login', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/login', ['email' => $this->email, 'password' => $this->password]);
         $response->assertStatus(200)->assertJson(['token' => true]);
     }
 
@@ -48,14 +48,10 @@ class UserAuthTest extends TestCase
     public function isUserExistsTest()
     {
         $this->assertDatabaseHas('users', [
-            'email' => 'test@test.test',
+            'email' => $this->email,
         ]);
 
-        User::where('email', 'test@test.test')->delete();
-
-        $this->assertDatabaseMissing('users', [
-            'email' => 'test@test.test',
-        ]);
+        $this->deleteUser();
     }
 
     /**
@@ -65,7 +61,7 @@ class UserAuthTest extends TestCase
      */
     public function secondLoginTest()
     {
-        $response = $this->postJson('/api/login', ['email' => 'test@test.test', 'password' => '88888888']);
+        $response = $this->postJson('/api/login', ['email' => $this->email, 'password' => $this->password]);
         $response->assertStatus(401);
     }
 }
