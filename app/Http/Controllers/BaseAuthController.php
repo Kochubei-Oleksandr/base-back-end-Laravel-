@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers;
-
 
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
@@ -33,5 +31,17 @@ abstract class BaseAuthController extends BaseController
         }
 
         return $this->successResponse(['token' => $token]);
+    }
+
+    public function refreshToken()
+    {
+        return $this->successResponse(['token' => Auth::guard($this->guard)->refresh()]);
+    }
+
+    public function logout()
+    {
+        Auth::guard($this->guard)->logout();
+
+        return $this->successResponse(['message' => 'You have successfully logged out']);
     }
 }
