@@ -2,6 +2,8 @@
 
 Route::post('login', 'User\\AuthController@login');
 Route::post('register', 'User\\AuthController@register');
+Route::post('refresh-token', 'User\\AuthController@refreshToken');
+Route::post('logout', 'User\\AuthController@logout');
 
 Route::group(['middleware' => 'jwt-auth:user'], function () {
     Route::get('user', 'User\\UserController@getOne');
