@@ -6,13 +6,14 @@ use App\Http\Controllers\BaseController;
 use App\Models\Location\City\City;
 use App\Models\Location\Region\Region;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends BaseController
 {
     protected string $modelClassController = User::class;
 
-    public function getOne()
+    public function getOne(Request $request)
     {
         $userData = $this->baseModel->getOne(Auth::id());
 

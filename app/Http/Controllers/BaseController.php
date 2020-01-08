@@ -2,35 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BaseModel;
-use App\Traits\BaseModelTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 abstract class BaseController extends Controller
 {
-//    use BaseModelTrait {
-//        BaseModelTrait::init(Region::class);
-//    }
-
     protected string $modelClassController;
     protected object $baseModel;
-    protected Request $request;
-    protected int $id;
-    protected int $userId;
 
-    public function __construct(
-        BaseModel $baseModel,
-        Request $request
-    )
+    public function __construct()
     {
-        dd([$this->modelClassController, 'modelClassController']);
-//        $this->baseModel = $baseModel->__construct($this->modelClassController);
-//        $this->baseModel->__construct($this->modelClassController);
-//        dd($baseModel);
-//        $this->request = $request;
-        $this->id = intval($request->route('id'));
-//        $this->userId = Auth::id();
+        $this->baseModel = new $this->modelClassController;
+    }
+
+    public function getTableSingularName()
+    {
+        return $this->baseModel->getTableSingularName();
+    }
+
+    public function getTablePluralName()
+    {
+        return $this->baseModel->getTablePluralName();
     }
 
     public function getAllCollectionsWithTranslate()
@@ -43,26 +35,30 @@ abstract class BaseController extends Controller
         return $this->baseModel->getAll();
     }
 
-    public function getOne()
+    public function getOne(Request $request)
     {
-        return $this->baseModel->getOne($this->id);
+        return $this->baseModel->getOne($this->getRequestId($request));
     }
 
-    public function createOne()
+    public function createOne(Request $request)
     {
-        $modelData= $this->request->all();
+        $modelData= $request->all();
         return $this->baseModel->createOne($modelData);
     }
 
-    public function updateOne()
+    public function updateOne(Request $request)
     {
-        $modelData= $this->request->all();
-        return $this->baseModel->updateOne($modelData, $this->id);
+        $modelData= $request->all();
+        return $this->baseModel->updateOne($modelData, $this->getRequestId($request));
     }
 
-    public function deleteOne()
+    public function deleteOne(Request $request)
     {
-        return $this->baseModel->deleteOne($this->id);
+        return $this->baseModel->deleteOne($this->getRequestId($request));
+    }
+
+    public function getRequestId(Request $request): int {
+        return intval($request->route('id'));
     }
 
     protected function successResponse($responseData)

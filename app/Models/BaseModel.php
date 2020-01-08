@@ -2,34 +2,42 @@
 
 namespace App\Models;
 
-use App\Traits\BaseModelTrait;
 use Illuminate\Database\Eloquent\Model;
 
-class BaseModel extends Model
+abstract class BaseModel extends Model
 {
     protected string $modelClass;
     protected string $modelTranslationClass;
     protected string $tableSingularName;
     protected string $tablePluralName;
 
-    public function __construct(string $modelClass = 'App\Models\User')
+    public function __construct()
     {
-        dd(['here!!!!!!!!', static::class]);
-        $this->modelClass = $modelClass;
+        $this->modelClass = static::class;
         $this->modelTranslationClass = $this->modelClass.'Translation';
-        $this->getTableSingularName();
-        $this->getTablePluralName();
+        $this->setTableSingularName();
+        $this->setTablePluralName();
         parent::__construct();
     }
 
-    public function getTableSingularName(): void
+    public function setTableSingularName(): void
     {
-        $this->tableSingularName = lcfirst(substr(strrchr(get_class(new $this->modelClass), "\\"), 1));
+        $this->tableSingularName = lcfirst(substr(strrchr($this->modelClass, "\\"), 1));
     }
 
-    public function getTablePluralName(): void
+    public function getTableSingularName(): string
     {
-        $this->tablePluralName = (new $this->modelClass)->getTable();
+        return $this->tableSingularName;
+    }
+
+    public function setTablePluralName(): void
+    {
+        $this->tablePluralName = $this->modelClass::getTable();
+    }
+
+    public function getTablePluralName(): string
+    {
+        return $this->tablePluralName;
     }
 
     public function getAllCollectionsWithTranslate() {
@@ -50,11 +58,6 @@ class BaseModel extends Model
     }
 
     public function getOne(int $id)
-    {
-        return $this->modelClass::find($id);
-    }
-
-    public function getOneByUserId(int $id)
     {
         return $this->modelClass::find($id);
     }

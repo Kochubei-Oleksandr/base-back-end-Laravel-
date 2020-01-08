@@ -12,7 +12,7 @@ class RegionController extends BaseController
 
     public function getRegionsByCountry(Request $request) {
         return $this->getAllCollectionsWithTranslate()
-            ->where($this->tablePluralName.'.country_id', $request->country_id)
+            ->where($this->getTablePluralName().'.country_id', $request->country_id)
             ->get();
     }
 }
