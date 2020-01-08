@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\CrudModelTrait;
 use App\Traits\JWTSubjectTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,6 +13,7 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
     use JWTSubjectTrait;
+    use CrudModelTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -40,6 +42,12 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->initCrud();
+        parent::__construct($attributes);
+    }
 
     public function setPasswordAttribute($value)
     {
