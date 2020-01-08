@@ -9,12 +9,17 @@ trait BaseModelTrait
     protected string $tableSingularName;
     protected string $tablePluralName;
 
-    public function init($modelClass)
+    public function __construct(string $modelClass)
     {
-        $this->modelClass = $modelClass;
-        $this->modelTranslationClass = $this->modelClass.'Translation';
-        $this->getTableSingularName();
-        $this->getTablePluralName();
+        dump('here!!!!!!!!', $modelClass);
+//        $this->modelClass = $modelClass;
+//        $this->modelTranslationClass = $this->modelClass.'Translation';
+//        $this->getTableSingularName();
+//        $this->getTablePluralName();
+    }
+
+    public static function init($modelClass) {
+        dump('3333333333!!!!!!!!', $modelClass);
     }
 
     public function getTableSingularName(): void
@@ -28,6 +33,7 @@ trait BaseModelTrait
     }
 
     public function getAllCollectionsWithTranslate() {
+        dd('herereeeee!#');
         return $this->modelClass::leftJoin(
             $this->tableSingularName.'_translations',
             $this->tablePluralName.'.id',

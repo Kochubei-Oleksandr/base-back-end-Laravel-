@@ -3,25 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\BaseModel;
+use App\Traits\BaseModelTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 abstract class BaseController extends Controller
 {
+//    use BaseModelTrait {
+//        BaseModelTrait::init(Region::class);
+//    }
+
     protected string $modelClassController;
     protected object $baseModel;
     protected Request $request;
     protected int $id;
+    protected int $userId;
 
     public function __construct(
         BaseModel $baseModel,
         Request $request
     )
     {
-        $baseModel->init($this->modelClassController);
-        $this->baseModel = $baseModel;
-        $this->request = $request;
+        dd([$this->modelClassController, 'modelClassController']);
+//        $this->baseModel = $baseModel->__construct($this->modelClassController);
+//        $this->baseModel->__construct($this->modelClassController);
+//        dd($baseModel);
+//        $this->request = $request;
         $this->id = intval($request->route('id'));
+//        $this->userId = Auth::id();
+    }
+
+    public function getAllCollectionsWithTranslate()
+    {
+        return $this->baseModel->getAllCollectionsWithTranslate();
     }
 
     public function getAll()
