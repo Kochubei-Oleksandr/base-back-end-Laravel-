@@ -6,13 +6,14 @@ use App\Http\Controllers\BaseController;
 use App\Models\Location\City\City;
 use App\Models\Location\Region\Region;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends BaseController
 {
     protected string $modelClassController = User::class;
 
-    public function getOne()
+    public function getOne(Request $request)
     {
         $userData = $this->baseModel->getOne(Auth::id());
 
@@ -25,5 +26,10 @@ class UserController extends BaseController
         }
 
         return $userData;
+    }
+
+    public function updateOneWithChecking(Request $request) {
+        return $this->baseModel->updateOneWithChecking($request->all(), $this->getRequestId($request), 'id', Auth::id())
+            ?: $this->responseWithError('This record does not belong to you', 403);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BaseModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,18 +9,25 @@ abstract class BaseController extends Controller
 {
     protected string $modelClassController;
     protected object $baseModel;
-    protected Request $request;
-    protected int $id;
 
-    public function __construct(
-        BaseModel $baseModel,
-        Request $request
-    )
+    public function __construct()
     {
-        $baseModel->init($this->modelClassController);
-        $this->baseModel = $baseModel;
-        $this->request = $request;
-        $this->id = intval($request->route('id'));
+        $this->baseModel = new $this->modelClassController;
+    }
+
+    public function getTableSingularName()
+    {
+        return $this->baseModel->getTableSingularName();
+    }
+
+    public function getTablePluralName()
+    {
+        return $this->baseModel->getTablePluralName();
+    }
+
+    public function getAllCollectionsWithTranslate()
+    {
+        return $this->baseModel->getAllCollectionsWithTranslate();
     }
 
     public function getAll()
@@ -29,26 +35,30 @@ abstract class BaseController extends Controller
         return $this->baseModel->getAll();
     }
 
-    public function getOne()
+    public function getOne(Request $request)
     {
-        return $this->baseModel->getOne($this->id);
+        return $this->baseModel->getOne($this->getRequestId($request));
     }
 
-    public function createOne()
+    public function createOne(Request $request)
     {
-        $modelData= $this->request->all();
-        return $this->baseModel->createOne($modelData);
+        return $this->baseModel->createOne($request->all());
     }
 
-    public function updateOne()
+    public function updateOneWithChecking(Request $request)
     {
-        $modelData= $this->request->all();
-        return $this->baseModel->updateOne($modelData, $this->id);
+        return $this->baseModel->updateOneWithChecking($request->all(), $this->getRequestId($request), 'user_id', Auth::id())
+            ?: $this->responseWithError('This record does not belong to you', 403);
     }
 
-    public function deleteOne()
+    public function deleteOneWithChecking(Request $request)
     {
-        return $this->baseModel->deleteOne($this->id);
+        return $this->baseModel->deleteOneWithChecking($this->getRequestId($request), 'user_id', Auth::id())
+            ?: $this->responseWithError('This record does not belong to you', 403);
+    }
+
+    public function getRequestId(Request $request): int {
+        return intval($request->route('id'));
     }
 
     protected function successResponse($responseData)

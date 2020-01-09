@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\Schema;
+
 trait BaseModelTrait
 {
     protected string $modelClass;
@@ -9,22 +11,32 @@ trait BaseModelTrait
     protected string $tableSingularName;
     protected string $tablePluralName;
 
-    public function init($modelClass)
+    public function initBaseModel()
     {
-        $this->modelClass = $modelClass;
+        $this->modelClass = static::class;
         $this->modelTranslationClass = $this->modelClass.'Translation';
-        $this->getTableSingularName();
-        $this->getTablePluralName();
+        $this->setTableSingularName();
+        $this->setTablePluralName();
     }
 
-    public function getTableSingularName(): void
+    public function setTableSingularName(): void
     {
-        $this->tableSingularName = lcfirst(substr(strrchr(get_class(new $this->modelClass), "\\"), 1));
+        $this->tableSingularName = lcfirst(substr(strrchr($this->modelClass, "\\"), 1));
     }
 
-    public function getTablePluralName(): void
+    public function getTableSingularName(): string
     {
-        $this->tablePluralName = (new $this->modelClass)->getTable();
+        return $this->tableSingularName;
+    }
+
+    public function setTablePluralName(): void
+    {
+        $this->tablePluralName = $this->modelClass::getTable();
+    }
+
+    public function getTablePluralName(): string
+    {
+        return $this->tablePluralName;
     }
 
     public function getAllCollectionsWithTranslate() {
@@ -35,5 +47,75 @@ trait BaseModelTrait
         )
             ->where($this->tableSingularName.'_translations.language_id', 1)
             ->select($this->tablePluralName.'.*', $this->tableSingularName.'_translations.name');
+    }
+
+    public function getAll()
+    {
+        return class_exists($this->modelTranslationClass)
+            ? $this->getAllCollectionsWithTranslate()->get()
+            : $this->modelClass::all();
+    }
+
+    public function getOne(int $id)
+    {
+        return $this->modelClass::find($id);
+    }
+
+    public function createOne(array $modelData)
+    {
+        return $this->modelClass::create($modelData);
+    }
+
+    public function updateOne(array $modelData, object $model)
+    {
+        $filteredModelData = array_filter(
+            $modelData,
+            function ($key) use ($model) {
+                return in_array($key, $model->getFillable());
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+
+        $model->fill($filteredModelData);
+        $model->save();
+
+        return $model->refresh();
+    }
+
+    public function updateOneWithChecking(array $modelData, int $id, string $columnName, $valueForColumnName)
+    {
+        if($model = $this->getOne($id)) {
+            return $this->isRecordBelongToUser($model, $columnName, $valueForColumnName)
+                ? $this->updateOne($modelData, $model)
+                : false;
+        } else {
+            return false;
+        }
+    }
+
+    public function deleteOne(int $id)
+    {
+        return $this->modelClass::destroy($id);
+    }
+
+    public function deleteOneWithChecking(int $id, string $columnName, $valueForColumnName)
+    {
+        if($model = $this->getOne($id)) {
+            return $this->isRecordBelongToUser($model, $columnName, $valueForColumnName)
+                ? $model->delete()
+                : false;
+        } else {
+            return false;
+        }
+    }
+
+    public function isRecordBelongToUser(object $model, string $columnName, $valueForColumnName): bool {
+        return $this->isColumnExistInTable($columnName)
+            ? $model->{$columnName} === $valueForColumnName
+            : false;
+    }
+
+    public function isColumnExistInTable(string $columnName): bool {
+        return Schema::hasColumn($this->getTablePluralName(), $columnName);
     }
 }

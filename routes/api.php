@@ -7,7 +7,7 @@ Route::post('logout', 'User\\AuthController@logout');
 
 Route::group(['middleware' => 'jwt-auth:user'], function () {
     Route::get('user', 'User\\UserController@getOne');
-    Route::put('user/{id}', 'User\\UserController@updateOne');
+    Route::put('user/{id}', 'User\\UserController@updateOneWithChecking');
 });
 
 Route::group(['prefix' => 'organization'], function () {
