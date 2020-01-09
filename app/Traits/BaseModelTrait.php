@@ -2,14 +2,16 @@
 
 namespace App\Traits;
 
-trait CrudModelTrait
+use Illuminate\Support\Facades\Schema;
+
+trait BaseModelTrait
 {
     protected string $modelClass;
     protected string $modelTranslationClass;
     protected string $tableSingularName;
     protected string $tablePluralName;
 
-    public function initCrud()
+    public function initBaseModel()
     {
         $this->modelClass = static::class;
         $this->modelTranslationClass = $this->modelClass.'Translation';
@@ -64,9 +66,8 @@ trait CrudModelTrait
         return $this->modelClass::create($modelData);
     }
 
-    public function updateOne(array $modelData, int $id)
+    public function updateOne(array $modelData, object $model)
     {
-        $model = $this->getOne($id);
         $filteredModelData = array_filter(
             $modelData,
             function ($key) use ($model) {
@@ -81,8 +82,40 @@ trait CrudModelTrait
         return $model->refresh();
     }
 
+    public function updateOneWithChecking(array $modelData, int $id, string $columnName, $valueForColumnName)
+    {
+        if($model = $this->getOne($id)) {
+            return $this->isRecordBelongToUser($model, $columnName, $valueForColumnName)
+                ? $this->updateOne($modelData, $model)
+                : false;
+        } else {
+            return false;
+        }
+    }
+
     public function deleteOne(int $id)
     {
         return $this->modelClass::destroy($id);
+    }
+
+    public function deleteOneWithChecking(int $id, string $columnName, $valueForColumnName)
+    {
+        if($model = $this->getOne($id)) {
+            return $this->isRecordBelongToUser($model, $columnName, $valueForColumnName)
+                ? $model->delete()
+                : false;
+        } else {
+            return false;
+        }
+    }
+
+    public function isRecordBelongToUser(object $model, string $columnName, $valueForColumnName): bool {
+        return $this->isColumnExistInTable($columnName)
+            ? $model->{$columnName} === $valueForColumnName
+            : false;
+    }
+
+    public function isColumnExistInTable(string $columnName): bool {
+        return Schema::hasColumn($this->getTablePluralName(), $columnName);
     }
 }

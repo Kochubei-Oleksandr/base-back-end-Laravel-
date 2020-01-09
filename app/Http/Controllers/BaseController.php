@@ -42,19 +42,19 @@ abstract class BaseController extends Controller
 
     public function createOne(Request $request)
     {
-        $modelData= $request->all();
-        return $this->baseModel->createOne($modelData);
+        return $this->baseModel->createOne($request->all());
     }
 
-    public function updateOne(Request $request)
+    public function updateOneWithChecking(Request $request)
     {
-        $modelData= $request->all();
-        return $this->baseModel->updateOne($modelData, $this->getRequestId($request));
+        return $this->baseModel->updateOneWithChecking($request->all(), $this->getRequestId($request), 'user_id', Auth::id())
+            ?: $this->responseWithError('This record does not belong to you', 403);
     }
 
-    public function deleteOne(Request $request)
+    public function deleteOneWithChecking(Request $request)
     {
-        return $this->baseModel->deleteOne($this->getRequestId($request));
+        return $this->baseModel->deleteOneWithChecking($this->getRequestId($request), 'user_id', Auth::id())
+            ?: $this->responseWithError('This record does not belong to you', 403);
     }
 
     public function getRequestId(Request $request): int {

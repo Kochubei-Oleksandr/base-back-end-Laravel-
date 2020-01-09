@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\CrudModelTrait;
+use App\Traits\BaseModelTrait;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class BaseModel extends Model
 {
-    use CrudModelTrait;
+    use BaseModelTrait;
 
     public function __construct()
     {
-        $this->initCrud();
+        $this->initBaseModel();
         parent::__construct();
     }
 }

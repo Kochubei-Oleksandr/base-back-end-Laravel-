@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Traits\CrudModelTrait;
+use App\Traits\BaseModelTrait;
 use App\Traits\JWTSubjectTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,13 +13,13 @@ class FoodDeliveryOrganization extends Authenticatable implements JWTSubject
 {
     use JWTSubjectTrait;
     use Notifiable;
-    use CrudModelTrait;
+    use BaseModelTrait;
 
     protected $fillable = ['email', 'password'];
 
     public function __construct(array $attributes = [])
     {
-        $this->initCrud();
+        $this->initBaseModel();
         parent::__construct($attributes);
     }
 

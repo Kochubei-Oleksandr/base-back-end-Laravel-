@@ -27,4 +27,9 @@ class UserController extends BaseController
 
         return $userData;
     }
+
+    public function updateOneWithChecking(Request $request) {
+        return $this->baseModel->updateOneWithChecking($request->all(), $this->getRequestId($request), 'id', Auth::id())
+            ?: $this->responseWithError('This record does not belong to you', 403);
+    }
 }
