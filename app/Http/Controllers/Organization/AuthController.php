@@ -10,8 +10,12 @@ use App\Models\FoodDeliveryOrganization;
 
 class AuthController extends BaseAuthController
 {
-    protected string $guard = 'organization';
+    /**
+     * the name of the model must be indicated in each controller
+     * @var string
+     */
     protected string $modelClassController = FoodDeliveryOrganization::class;
+    protected string $guard = 'organization';
 
     public function register(RegisterRequest $request)
     {

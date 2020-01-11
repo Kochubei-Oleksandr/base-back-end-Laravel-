@@ -4,15 +4,12 @@ namespace App\Http\Controllers\Location;
 
 use App\Http\Controllers\BaseController;
 use App\Models\Location\Region\Region;
-use Illuminate\Http\Request;
 
 class RegionController extends BaseController
 {
+    /**
+     * the name of the model must be indicated in each controller
+     * @var string
+     */
     protected string $modelClassController = Region::class;
-
-    public function getRegionsByCountry(Request $request) {
-        return $this->getAllCollectionsWithTranslate()
-            ->where($this->getTablePluralName().'.country_id', $request->country_id)
-            ->get();
-    }
 }
