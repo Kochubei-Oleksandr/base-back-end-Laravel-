@@ -1,4 +1,13 @@
 <?php
+/**
+ * Try to use methods from BaseController (App\Http\Controllers\BaseController)
+ *
+ * GET getAll -> route-name ?+ params (for 'where')
+ * GET getOne -> route-name/{id} ?+ params (for 'where')
+ * POST createOne -> route-name + data
+ * PUT updateOne -> route-name/{id} + data
+ * DELETE deleteOne -> route-name/{id}
+ */
 
 Route::post('login', 'User\\AuthController@login');
 Route::post('register', 'User\\AuthController@register');
@@ -7,7 +16,7 @@ Route::post('logout', 'User\\AuthController@logout');
 
 Route::group(['middleware' => 'jwt-auth:user'], function () {
     Route::get('user', 'User\\UserController@getOne');
-    Route::put('user/{id}', 'User\\UserController@updateOneWithChecking');
+    Route::put('user/{id}', 'User\\UserController@updateOne');
 });
 
 Route::group(['prefix' => 'organization'], function () {
@@ -21,5 +30,5 @@ Route::group(['prefix' => 'organization'], function () {
 });
 
 Route::get('countries', 'Location\\CountryController@getAll');
-Route::get('regions', 'Location\\RegionController@getRegionsByCountry');
-Route::get('cities', 'Location\\CityController@getCitiesByRegion');
+Route::get('regions', 'Location\\RegionController@getAll');
+Route::get('cities', 'Location\\CityController@getAll');

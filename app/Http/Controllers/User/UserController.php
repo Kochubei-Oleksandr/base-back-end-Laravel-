@@ -11,11 +11,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends BaseController
 {
+    /**
+     * the name of the model must be indicated in each controller
+     * @var string
+     */
     protected string $modelClassController = User::class;
 
     public function getOne(Request $request)
     {
-        $userData = $this->baseModel->getOne(Auth::id());
+        $userData = $this->baseModel->getCollections($request->all(), Auth::id())->first();
 
         if ($userData->city_id) {
             $city = City::find($userData->city_id);
@@ -28,8 +32,8 @@ class UserController extends BaseController
         return $userData;
     }
 
-    public function updateOneWithChecking(Request $request) {
-        return $this->baseModel->updateOneWithChecking($request->all(), $this->getRequestId($request), 'id', Auth::id())
+    public function updateOne(Request $request) {
+        return $this->baseModel->updateOne($request->all(), $this->getRequestId($request), 'id', Auth::id())
             ?: $this->responseWithError('This record does not belong to you', 403);
     }
 }

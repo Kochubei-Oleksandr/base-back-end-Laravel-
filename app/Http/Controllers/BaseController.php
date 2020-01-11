@@ -15,29 +15,14 @@ abstract class BaseController extends Controller
         $this->baseModel = new $this->modelClassController;
     }
 
-    public function getTableSingularName()
+    public function getAll(Request $request)
     {
-        return $this->baseModel->getTableSingularName();
-    }
-
-    public function getTablePluralName()
-    {
-        return $this->baseModel->getTablePluralName();
-    }
-
-    public function getAllCollectionsWithTranslate()
-    {
-        return $this->baseModel->getAllCollectionsWithTranslate();
-    }
-
-    public function getAll()
-    {
-        return $this->baseModel->getAll();
+        return $this->baseModel->getCollections($request->all())->get();
     }
 
     public function getOne(Request $request)
     {
-        return $this->baseModel->getOne($this->getRequestId($request));
+        return $this->baseModel->getCollections($request->all(), $this->getRequestId($request))->first();
     }
 
     public function createOne(Request $request)
@@ -45,15 +30,15 @@ abstract class BaseController extends Controller
         return $this->baseModel->createOne($request->all());
     }
 
-    public function updateOneWithChecking(Request $request)
+    public function updateOne(Request $request)
     {
-        return $this->baseModel->updateOneWithChecking($request->all(), $this->getRequestId($request), 'user_id', Auth::id())
+        return $this->baseModel->updateOne($request->all(), $this->getRequestId($request), 'user_id', Auth::id())
             ?: $this->responseWithError('This record does not belong to you', 403);
     }
 
-    public function deleteOneWithChecking(Request $request)
+    public function deleteOne(Request $request)
     {
-        return $this->baseModel->deleteOneWithChecking($this->getRequestId($request), 'user_id', Auth::id())
+        return $this->baseModel->deleteOne($this->getRequestId($request), 'user_id', Auth::id())
             ?: $this->responseWithError('This record does not belong to you', 403);
     }
 

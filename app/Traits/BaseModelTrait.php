@@ -2,120 +2,82 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Facades\Schema;
-
 trait BaseModelTrait
 {
-    protected string $modelClass;
-    protected string $modelTranslationClass;
-    protected string $tableSingularName;
-    protected string $tablePluralName;
+    use CoreBaseModelTrait;
 
-    public function initBaseModel()
+    /**
+     * Return a collections of one or more records with or without translation
+     *
+     * @param array $params - use for filter 'where'
+     * @param int|null $id - to display the specific record
+     * @return mixed
+     */
+    public function getCollections(array $params, int $id = null)
     {
-        $this->modelClass = static::class;
-        $this->modelTranslationClass = $this->modelClass.'Translation';
-        $this->setTableSingularName();
-        $this->setTablePluralName();
+        if (class_exists($this->modelTranslationClass)) {
+            $query = $this->getCollectionsWithTranslate($id);
+        } else {
+            if($id) {
+                $query = $this->modelClass::where($this->tablePluralName.'.id', $id);
+            } else {
+                $query = new $this->modelClass;
+            }
+        }
+
+        $params = $this->getQueryParams($this->filteringForParams($params));
+
+        return $query->where($params);
     }
 
-    public function setTableSingularName(): void
-    {
-        $this->tableSingularName = lcfirst(substr(strrchr($this->modelClass, "\\"), 1));
-    }
-
-    public function getTableSingularName(): string
-    {
-        return $this->tableSingularName;
-    }
-
-    public function setTablePluralName(): void
-    {
-        $this->tablePluralName = $this->modelClass::getTable();
-    }
-
-    public function getTablePluralName(): string
-    {
-        return $this->tablePluralName;
-    }
-
-    public function getAllCollectionsWithTranslate() {
-        return $this->modelClass::leftJoin(
-            $this->tableSingularName.'_translations',
-            $this->tablePluralName.'.id',
-            $this->tableSingularName.'_translations.'.$this->tableSingularName.'_id'
-        )
-            ->where($this->tableSingularName.'_translations.language_id', 1)
-            ->select($this->tablePluralName.'.*', $this->tableSingularName.'_translations.name');
-    }
-
-    public function getAll()
-    {
-        return class_exists($this->modelTranslationClass)
-            ? $this->getAllCollectionsWithTranslate()->get()
-            : $this->modelClass::all();
-    }
-
-    public function getOne(int $id)
-    {
-        return $this->modelClass::find($id);
-    }
-
+    /**
+     * Creating a new record in the database
+     * Return the created record
+     *
+     * @param array $modelData - data for recording
+     * @return mixed
+     */
     public function createOne(array $modelData)
     {
         return $this->modelClass::create($modelData);
     }
 
-    public function updateOne(array $modelData, object $model)
+    /**
+     * Updates the model and then returns it (with checking for compliance of the record to the user)
+     *
+     * @param array $modelData - data for updating
+     * @param int $id - ID record to update
+     * @param string $columnName - column name to check whether a record matches a specific user
+     * @param $valueForColumnName - column value to check whether a record matches a specific user
+     * @return bool
+     */
+    public function updateOne(array $modelData, int $id, string $columnName, $valueForColumnName)
     {
-        $filteredModelData = array_filter(
-            $modelData,
-            function ($key) use ($model) {
-                return in_array($key, $model->getFillable());
-            },
-            ARRAY_FILTER_USE_KEY
-        );
-
-        $model->fill($filteredModelData);
-        $model->save();
-
-        return $model->refresh();
-    }
-
-    public function updateOneWithChecking(array $modelData, int $id, string $columnName, $valueForColumnName)
-    {
-        if($model = $this->getOne($id)) {
+        if ($model = $this->getOneRecord($id)) {
             return $this->isRecordBelongToUser($model, $columnName, $valueForColumnName)
-                ? $this->updateOne($modelData, $model)
+                ? $this->updateOneRecord($modelData, $model)
                 : false;
         } else {
             return false;
         }
     }
 
-    public function deleteOne(int $id)
+    /**
+     * Delete one record with checking for compliance of the record to the user
+     *
+     * @param int $id - ID record to delete
+     * @param string $columnName - column name to check whether a record matches a specific user
+     * @param $valueForColumnName - column value to check whether a record matches a specific user
+     * @return bool
+     */
+    public function deleteOne(int $id, string $columnName, $valueForColumnName)
     {
-        return $this->modelClass::destroy($id);
-    }
-
-    public function deleteOneWithChecking(int $id, string $columnName, $valueForColumnName)
-    {
-        if($model = $this->getOne($id)) {
+        if ($model = $this->getOneRecord($id)) {
             return $this->isRecordBelongToUser($model, $columnName, $valueForColumnName)
                 ? $model->delete()
                 : false;
         } else {
             return false;
         }
-    }
-
-    public function isRecordBelongToUser(object $model, string $columnName, $valueForColumnName): bool {
-        return $this->isColumnExistInTable($columnName)
-            ? $model->{$columnName} === $valueForColumnName
-            : false;
-    }
-
-    public function isColumnExistInTable(string $columnName): bool {
-        return Schema::hasColumn($this->getTablePluralName(), $columnName);
     }
 }
