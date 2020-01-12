@@ -18,5 +18,11 @@ class DatabaseSeeder extends Seeder
         $this->call(RegionTranslationsSeeder::class);
         $this->call(CitiesSeeder::class);
         $this->call(CityTranslationsSeeder::class);
+        $this->call(GoalsSeeder::class);
+        $this->call(GoalTranslationsSeeder::class);
+        $this->call(SexesSeeder::class);
+        $this->call(SexTranslationsSeeder::class);
+        $this->call(LifestylesSeeder::class);
+        $this->call(LifestyleTranslationsSeeder::class);
     }
 }
