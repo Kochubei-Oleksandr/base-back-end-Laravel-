@@ -32,3 +32,7 @@ Route::group(['prefix' => 'organization'], function () {
 Route::get('countries', 'Location\\CountryController@getAll');
 Route::get('regions', 'Location\\RegionController@getAll');
 Route::get('cities', 'Location\\CityController@getAll');
+
+Route::get('sexes', 'UserOption\\SexController@getAll');
+Route::get('lifestyles', 'UserOption\\LifestyleController@getAll');
+Route::get('goals', 'UserOption\\GoalController@getAll');
