@@ -71,6 +71,6 @@ class OrganizationAuthTest extends TestCase
     public function secondLoginTest()
     {
         $response = $this->postJson('/api/organization/login', ['email' => 'test333@test.test', 'password' => '88888888']);
-        $response->assertStatus(401);
+        $response->assertStatus(403);
     }
 }

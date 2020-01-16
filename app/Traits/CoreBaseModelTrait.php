@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\Language;
 use Illuminate\Support\Facades\Schema;
 
 trait CoreBaseModelTrait
@@ -69,13 +70,15 @@ trait CoreBaseModelTrait
      * @param int|null $id - to display the specific record
      * @return mixed
      */
-    protected function getCollectionsWithTranslate(int $id = null) {
+    protected function getCollectionsWithTranslate(string $language, int $id = null) {
+        $language_id = $this->getLanguageId($language);
+
         $query = $this->modelClass::leftJoin(
             $this->tableSingularName.'_translations',
             $this->tablePluralName.'.id',
             $this->tableSingularName.'_translations.'.$this->tableSingularName.'_id'
         )
-            ->where($this->tableSingularName.'_translations.language_id', 1)
+            ->where($this->tableSingularName.'_translations.language_id', $language_id)
             ->select($this->tablePluralName.'.*', $this->tableSingularName.'_translations.name');
 
         if ($id) {
@@ -153,7 +156,7 @@ trait CoreBaseModelTrait
     /**
      * adds to each column in the table the name of the table itself
      * (example: ($tablePluralName - countries, columnName - id) => result - countries.id)
-     * 
+     *
      * @param array $existingTableColumns
      * @return array
      */
@@ -175,5 +178,9 @@ trait CoreBaseModelTrait
      */
     protected function isColumnExistInTable(string $columnName): bool {
         return Schema::hasColumn($this->getTablePluralName(), $columnName);
+    }
+
+    protected function getLanguageId($language) {
+        return Language::select('id')->where('name', $language)->first()->id;
     }
 }

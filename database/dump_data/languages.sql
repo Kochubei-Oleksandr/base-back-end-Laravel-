@@ -1,4 +1,4 @@
 INSERT INTO languages (id, name) VALUES
-(1, 'En'),
-(2, 'Ru');
+(1, 'en'),
+(2, 'ru');
 COMMIT;

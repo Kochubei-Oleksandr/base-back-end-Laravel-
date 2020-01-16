@@ -16,7 +16,7 @@ trait BaseModelTrait
     public function getCollections(array $params, int $id = null)
     {
         if (class_exists($this->modelTranslationClass)) {
-            $query = $this->getCollectionsWithTranslate($id);
+            $query = $this->getCollectionsWithTranslate($params['language'], $id);
         } else {
             if($id) {
                 $query = $this->modelClass::where($this->tablePluralName.'.id', $id);

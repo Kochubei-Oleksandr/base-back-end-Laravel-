@@ -62,6 +62,6 @@ class UserAuthTest extends BaseTest
     public function secondLoginTest()
     {
         $response = $this->postJson('/api/login', ['email' => $this->email, 'password' => $this->password]);
-        $response->assertStatus(401);
+        $response->assertStatus(403);
     }
 }
