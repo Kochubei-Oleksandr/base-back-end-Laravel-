@@ -17,11 +17,11 @@ Route::group(['middleware' => 'language'], function () {
     Route::post('logout', 'User\\AuthController@logout');
 
     Route::group(['middleware' => 'jwt-auth:user'], function () {
-        Route::get('user', 'User\\UserController@getPersonalData');
-        Route::put('user/{id}', 'User\\UserController@updatePersonalData');
+        Route::get('user', 'User\\UserController@getOne');
+        Route::put('user/{id}', 'User\\UserController@updateOne');
 
-        Route::get('user-params', 'UserOption\\CalorieCalculatorController@getUserParameters');
-        Route::put('user-params/{id}', 'UserOption\\CalorieCalculatorController@updateUserParameters');
+        Route::get('user-params', 'UserOption\\CalorieCalculatorController@getOne');
+        Route::put('user-params/{id}', 'UserOption\\CalorieCalculatorController@updateOne');
     });
 
     Route::group(['prefix' => 'organization'], function () {

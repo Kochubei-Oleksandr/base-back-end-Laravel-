@@ -62,11 +62,6 @@ class CalorieCalculatorTest extends BaseTest
             'Authorization' => 'Bearer '.$this->userToken,
         ])->putJson('/api/user-params/'.$this->userId, $datar);
 
-//        var_dump('$this->userId', $this->userId);
-//        var_dump($response);
-//
-//        dd( $response->assertJsonFragment($datar));
-
         $response->assertStatus(200)->assertJsonFragment($datar);
     }
 }

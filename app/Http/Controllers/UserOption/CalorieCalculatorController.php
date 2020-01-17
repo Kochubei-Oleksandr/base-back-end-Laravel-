@@ -29,12 +29,12 @@ class CalorieCalculatorController extends BaseController
         parent::__construct();
     }
 
-    public function getUserParameters(Request $request)
+    public function getOne(Request $request)
     {
         return $this->userModel->getUserParameters($request, $this->weight, $this->height);
     }
 
-    public function updateUserParameters(Request $request)
+    public function updateOne(Request $request)
     {
         if ($this->isValidateError($request)) {
             return $this->isValidateError($request);

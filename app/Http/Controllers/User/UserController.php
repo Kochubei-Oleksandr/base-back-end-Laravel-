@@ -23,12 +23,12 @@ class UserController extends BaseController
         parent::__construct();
     }
 
-    public function getPersonalData(Request $request)
+    public function getOne(Request $request)
     {
         return $this->userModel->getPersonalData($request);
     }
 
-    public function updatePersonalData(Request $request)
+    public function updateOne(Request $request)
     {
         if ($this->isValidateError($request)) {
             return $this->isValidateError($request);
