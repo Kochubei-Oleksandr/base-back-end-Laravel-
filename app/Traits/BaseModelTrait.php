@@ -2,6 +2,9 @@
 
 namespace App\Traits;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 trait BaseModelTrait
 {
     use CoreBaseModelTrait;
@@ -9,12 +12,15 @@ trait BaseModelTrait
     /**
      * Return a collections of one or more records with or without translation
      *
-     * @param array $params - use for filter 'where'
-     * @param int|null $id - to display the specific record
+     * @param Request $request
+     * @param null $id
      * @return mixed
      */
-    public function getCollections(array $params, int $id = null)
+    public function getCollections(Request $request, $id = null)
     {
+        $params = $request->all();
+        $id = $id ? $id : $this->getRequestId($request);
+
         if (class_exists($this->modelTranslationClass)) {
             $query = $this->getCollectionsWithTranslate($params['language'], $id);
         } else {
@@ -34,28 +40,36 @@ trait BaseModelTrait
      * Creating a new record in the database
      * Return the created record
      *
-     * @param array $modelData - data for recording
+     * @param Request $request
      * @return mixed
      */
-    public function createOne(array $modelData)
+    public function createOne(Request $request)
     {
-        return $this->modelClass::create($modelData);
+        if(!$request->has('date')) {
+            $request->merge(["date" => date("Y-m-d")]);
+        }
+        $request->merge(["user_id" => Auth::id()]);
+
+        $model = new $this->modelClass;
+        $model->fill($request->all());
+        $model->save();
+
+        return $model;
     }
 
     /**
      * Updates the model and then returns it (with checking for compliance of the record to the user)
      *
-     * @param array $modelData - data for updating
-     * @param int $id - ID record to update
+     * @param Request $request
      * @param string $columnName - column name to check whether a record matches a specific user
      * @param $valueForColumnName - column value to check whether a record matches a specific user
-     * @return bool
+     * @return bool|mixed
      */
-    public function updateOne(array $modelData, int $id, string $columnName, $valueForColumnName)
+    public function updateOne(Request $request, $valueForColumnName, string $columnName = 'user_id')
     {
-        if ($model = $this->getOneRecord($id)) {
+        if ($model = $this->getOneRecord($this->getRequestId($request))) {
             return $this->isRecordBelongToUser($model, $columnName, $valueForColumnName)
-                ? $this->updateOneRecord($modelData, $model)
+                ? $this->updateOneRecord($request->all(), $model)
                 : false;
         } else {
             return false;
@@ -65,14 +79,14 @@ trait BaseModelTrait
     /**
      * Delete one record with checking for compliance of the record to the user
      *
-     * @param int $id - ID record to delete
      * @param string $columnName - column name to check whether a record matches a specific user
      * @param $valueForColumnName - column value to check whether a record matches a specific user
+     * @param Request $request
      * @return bool
      */
-    public function deleteOne(int $id, string $columnName, $valueForColumnName)
+    public function deleteOne(Request $request, $valueForColumnName, string $columnName = 'user_id')
     {
-        if ($model = $this->getOneRecord($id)) {
+        if ($model = $this->getOneRecord($this->getRequestId($request))) {
             return $this->isRecordBelongToUser($model, $columnName, $valueForColumnName)
                 ? $model->delete()
                 : false;

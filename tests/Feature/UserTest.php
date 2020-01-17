@@ -17,7 +17,7 @@ class UserTest extends BaseTest
 
         $this->getUserInfoAfterRegister();
         $this->updateUserInfo();
-        $this->getUserInfoAfterSelectedCity();
+//        $this->getUserInfoAfterSelectedCity();
 
         $this->deleteUser();
     }

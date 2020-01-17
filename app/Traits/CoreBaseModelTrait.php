@@ -180,7 +180,21 @@ trait CoreBaseModelTrait
         return Schema::hasColumn($this->getTablePluralName(), $columnName);
     }
 
+    /**
+     * @param $language
+     * @return mixed
+     */
     protected function getLanguageId($language) {
         return Language::select('id')->where('name', $language)->first()->id;
+    }
+
+    /**
+     * Get id from request url (example: .../112)
+     *
+     * @param $request
+     * @return int
+     */
+    protected function getRequestId($request): int {
+        return intval($request->route('id'));
     }
 }

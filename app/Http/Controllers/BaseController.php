@@ -24,12 +24,12 @@ abstract class BaseController extends Controller
 
     public function getAll(Request $request)
     {
-        return $this->baseModel->getCollections($request->all())->get();
+        return $this->baseModel->getCollections($request)->get();
     }
 
     public function getOne(Request $request)
     {
-        return $this->baseModel->getCollections($request->all(), $this->getRequestId($request))->first();
+        return $this->baseModel->getCollections($request)->first();
     }
 
     public function createOne(Request $request)
@@ -38,7 +38,7 @@ abstract class BaseController extends Controller
             return $this->isValidateError($request);
         }
 
-        return $this->baseModel->createOne($request->all());
+        return $this->baseModel->createOne($request);
     }
 
     public function updateOne(Request $request)
@@ -47,18 +47,14 @@ abstract class BaseController extends Controller
             return $this->isValidateError($request);
         }
 
-        return $this->baseModel->updateOne($request->all(), $this->getRequestId($request), 'user_id', Auth::id())
+        return $this->baseModel->updateOne($request, Auth::id())
             ?: $this->responseWithError('This record does not belong to you', 403);
     }
 
     public function deleteOne(Request $request)
     {
-        return $this->baseModel->deleteOne($this->getRequestId($request), 'user_id', Auth::id())
+        return $this->baseModel->deleteOne($request, Auth::id())
             ?: $this->responseWithError('This record does not belong to you', 403);
-    }
-
-    public function getRequestId(Request $request): int {
-        return intval($request->route('id'));
     }
 
     public function isValidateError (Request $request) {

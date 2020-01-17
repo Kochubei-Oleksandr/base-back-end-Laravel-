@@ -4,11 +4,8 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\User\UserRequest;
-use App\Models\Location\City\City;
-use App\Models\Location\Region\Region;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends BaseController
 {
@@ -18,37 +15,26 @@ class UserController extends BaseController
      */
     protected string $modelClassController = User::class;
     protected string $requestClassController = UserRequest::class;
+    protected User $userModel;
 
-    protected function addLocationForUser($userData)
+    public function __construct(User $userModel)
     {
-        if ($userData->city_id) {
-            $city = City::find($userData->city_id);
-            $region = Region::find($city->region_id);
-
-            $userData->{"region_id"} = $city->region_id;
-            $userData->{"country_id"} = $region->country_id;
-        }
-
-        return $userData;
+        $this->userModel = $userModel;
+        parent::__construct();
     }
 
-    public function getOne(Request $request)
+    public function getPersonalData(Request $request)
     {
-        $userData = $this->baseModel->getCollections($request->all(), Auth::id())->first();
-
-        return $this->addLocationForUser($userData);
+        return $this->userModel->getPersonalData($request);
     }
 
-    public function updateOne(Request $request)
+    public function updatePersonalData(Request $request)
     {
         if ($this->isValidateError($request)) {
             return $this->isValidateError($request);
         }
 
-        $userData = $this->baseModel->updateOne($request->all(), $this->getRequestId($request), 'id', Auth::id());
-
-        return $userData
-            ? $this->addLocationForUser($userData)
-            : $this->responseWithError('This record does not belong to you', 403);
+        return $this->userModel->updatePersonalData($request)
+            ?: $this->responseWithError('This record does not belong to you', 403);
     }
 }
