@@ -14,7 +14,6 @@ Route::group(['middleware' => 'language'], function () {
     Route::post('login', 'User\\AuthController@login');
     Route::post('register', 'User\\AuthController@register');
     Route::post('refresh-token', 'User\\AuthController@refreshToken');
-    Route::post('logout', 'User\\AuthController@logout');
 
     Route::group(['middleware' => 'jwt-auth:user'], function () {
         Route::get('user', 'User\\UserController@getOne');
@@ -22,6 +21,8 @@ Route::group(['middleware' => 'language'], function () {
 
         Route::get('user-params', 'UserOption\\CalorieCalculatorController@getOne');
         Route::put('user-params/{id}', 'UserOption\\CalorieCalculatorController@updateOne');
+
+        Route::post('logout', 'User\\AuthController@logout');
     });
 
     Route::group(['prefix' => 'organization'], function () {
