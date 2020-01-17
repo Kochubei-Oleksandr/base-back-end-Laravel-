@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\JWTAuth;
+use App\Http\Middleware\SetLanguage;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -64,6 +65,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'jwt-auth' => JWTAuth::class,
+        'language' => SetLanguage::class,
     ];
 
     /**

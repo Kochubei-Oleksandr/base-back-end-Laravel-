@@ -17,7 +17,7 @@ class UserTest extends BaseTest
 
         $this->getUserInfoAfterRegister();
         $this->updateUserInfo();
-        $this->getUserInfoAfterSelectedCity();
+//        $this->getUserInfoAfterSelectedCity();
 
         $this->deleteUser();
     }
@@ -60,9 +60,12 @@ class UserTest extends BaseTest
             'name' => 'Alex',
             'mobile' => '88888888',
             'delivery_address' => 'testStreet',
+            'email' => $this->email,
             'age' => 99,
             'language_id' => 2,
             'city_id' => 1,
+            'region_id' => 1,
+            'country_id' => 1,
 
             // TODO - change it after seeds & migrations
             'sex_id' => null,

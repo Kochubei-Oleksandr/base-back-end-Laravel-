@@ -15,6 +15,7 @@ class CreateLifestylesTable extends Migration
     {
         Schema::create('lifestyles', function (Blueprint $table) {
             $table->increments('id');
+            $table->float('kcal_per_hour', 4,1);
         });
     }
 

@@ -27,7 +27,7 @@ abstract class BaseAuthController extends BaseController
     protected function loginAttempt(array $credentials)
     {
         if (!$token = Auth::guard($this->guard)->attempt($credentials)) {
-            return $this->responseWithError('Unauthorized', 401);
+            return $this->responseWithError('You have incorrectly entered your username or password', 403);
         }
 
         return $this->successResponse(['token' => $token]);

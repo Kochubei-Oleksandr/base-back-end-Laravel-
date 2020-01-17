@@ -8,7 +8,7 @@ use Tests\TestCase;
 class BaseTest extends TestCase
 {
     protected string $userToken = '';
-    protected string $userId = '';
+    protected ?int $userId = null;
     protected string $email = 'test333@test.test';
     protected string $password = '88888888';
 
@@ -55,7 +55,10 @@ class BaseTest extends TestCase
      */
     public function deleteUser()
     {
-        User::where('email', $this->email)->delete();
+        $user = User::where('email', $this->email)->first();
+        if ($user) {
+            $user->delete();
+        }
 
         return $this->assertDatabaseMissing('users', [
             'email' => $this->email,

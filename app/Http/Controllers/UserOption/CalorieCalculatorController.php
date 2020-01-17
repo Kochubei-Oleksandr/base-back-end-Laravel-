@@ -1,31 +1,37 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\UserOption;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\User\UserRequest;
+use App\Http\Requests\CalorieCalculatorRequest;
 use App\Models\User;
+use App\Models\UserOption\Height;
+use App\Models\UserOption\Weight;
 use Illuminate\Http\Request;
 
-class UserController extends BaseController
+class CalorieCalculatorController extends BaseController
 {
     /**
      * the name of the model must be indicated in each controller
      * @var string
      */
     protected string $modelClassController = User::class;
-    protected string $requestClassController = UserRequest::class;
+    protected string $requestClassController = CalorieCalculatorRequest::class;
     protected User $userModel;
+    protected Weight $weight;
+    protected Height $height;
 
-    public function __construct(User $userModel)
+    public function __construct(User $userModel, Weight $weight, Height $height)
     {
+        $this->weight = $weight;
+        $this->height = $height;
         $this->userModel = $userModel;
         parent::__construct();
     }
 
     public function getOne(Request $request)
     {
-        return $this->userModel->getPersonalData($request);
+        return $this->userModel->getUserParameters($request, $this->weight, $this->height);
     }
 
     public function updateOne(Request $request)
@@ -34,7 +40,7 @@ class UserController extends BaseController
             return $this->isValidateError($request);
         }
 
-        return $this->userModel->updatePersonalData($request)
+        return $this->userModel->updateUserParameters($request, $this->weight, $this->height)
             ?: $this->responseWithError('This record does not belong to you', 403);
     }
 }
